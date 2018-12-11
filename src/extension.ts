@@ -33,10 +33,14 @@ export function activate(context: vscode.ExtensionContext) {
           let unzombified = { ...json };
           for (let index = 0; index < zombies.length; index++) {
             const zombie = zombies[index];
-            const zombieKeys = zombie.split('.');
-            const prop = zombieKeys.pop();
-            const parent = zombieKeys.reduce((obj, key) => obj[key], unzombified);
-            delete parent[prop];
+            if (unzombified[zombie]) {
+              delete unzombified[zombie];
+            } else {
+              const zombieKeys = zombie.split('.');
+              const prop = zombieKeys.pop();
+              const parent = zombieKeys.reduce((obj, key) => obj[key], unzombified);
+              delete parent[prop];
+            }
           }
           const content = JSON.stringify(unzombified, null, 2);
           vscode.workspace.openTextDocument({ content })
